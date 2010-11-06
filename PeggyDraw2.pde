@@ -127,158 +127,107 @@ void mousePressed() {
   
   else
   {  // Check GUI buttons!
-  
-  x = 110;
-  y =  cellSize*rows + 25;
-  
-    if (overRect(x, y-18, 40, 18) )
-  { //    text("Clear", x, y);
 
-j = 0;
-  while (j < 625){
-    GrayArray[j] = 0;
-    j++; 
+    if( clearButton.isSelected() ) {
+      j = 0;
+      while (j < 625){
+        GrayArray[j] = 0;
+        j++; 
+      }
+    }
+    else if( fillButton.isSelected() ) {
+      j = 0;
+      while (j < 625){
+        GrayArray[j] = brightFillColor;
+        j++; 
+      }
+    }
+    else if( invertButton.isSelected() ) {
+      j = 0;
+      while (j < 625) {
+        if (  GrayArray[j] == brightFillColor )
+          GrayArray[j] = 0;
+        else
+          GrayArray[j] = brightFillColor;
+        j++; 
+      }
+    }
+    else if( copyButton.isSelected() ) {
+      j = 0;
+      while (j < 625) {
+        Buffer[j] =  GrayArray[j]; 
+        j++; 
+      }
+    }
+    else if( pasteButton.isSelected() ) {
+      j = 0;
+      while (j < 625) {
+        GrayArray[j] = Buffer[j]; 
+        j++; 
+      }
+    }
+    else if( deleteButton.isSelected() ) {
+      // TODO: has error.
+      if ( FrameCount > 1)
+      {
+        FrameCount -= 1;
+        DeleteFrame();
+ 
+        if (CurrentFrame > FrameCount)
+          CurrentFrame--;
+ 
+        RecallFrame(CurrentFrame);
+      }
+    }
+    else if( previousButton.isSelected() ) {
+      if ( CurrentFrame > 1)
+      {
+        StoreFrame();
+        CurrentFrame--;
+        RecallFrame(CurrentFrame);
+        CurrentDuration = PeggyDurations[CurrentFrame - 1];
+      }
+    }
+    else if( nextButton.isSelected() ) {
+      if (CurrentFrame < FrameCount)
+      {
+        StoreFrame();
+
+        CurrentFrame++;
+        RecallFrame(CurrentFrame);
+        CurrentDuration = PeggyDurations[CurrentFrame - 1];
+      }
+    }
+    else if( addButton.isSelected() ) {
+      FrameCount += 1; 
+  
+      StoreFrame();
+      InsertFrame();   
+      CurrentFrame++;
+      RecallFrame(CurrentFrame);   //OK thus far...
+
+      CurrentDuration = PeggyDurations[CurrentFrame - 1];
+    }
+    else if( loadButton.isSelected() ) {
+      // Load in the data!
+    }
+    else if( saveButton.isSelected() ) {
+      // Save out the data!
+    }
   }
-} 
-
-  x += 75;
- if (overRect(x, y-18, 30, 18) )
-  { 
-//    text("Fill", x, y);
- 
-j = 0;
-  while (j < 625){
-    GrayArray[j] = brightFillColor;
-    j++; 
-  }
-} 
- 
-  x += 65;
- if (overRect(x, y-18, 50, 18) )
-  { //    text("Invert", x, y);
-
-j = 0;
-  while (j < 625){
-    if (  GrayArray[j] == brightFillColor )
-    GrayArray[j] = 0;
-    else
-    GrayArray[j] = brightFillColor;
-    j++; 
-  }
-
-} 
   
-  x += 85;
- if (overRect(x, y-18, 40, 18) )
-  { //    text("Copy", x, y); 
-j = 0;
-  while (j < 625){
-    Buffer[j] =  GrayArray[j]; 
-    j++; 
-  }
-} 
-  
-  x += 75;
- if (overRect(x, y-18, 45, 18) )
-  { 
-    j = 0;
-  while (j < 625){
-    GrayArray[j] = Buffer[j]; 
-    j++; 
-  }
-  //  text("Paste", x, y);
-} 
-
-
-  x = 105;
-  y = cellSize*rows + 65;
-
-   if (overRect(x+5, y-18, 50, 18) )
-  { //    text("-Frame", x, y);
-
-if ( FrameCount > 1){
- FrameCount -= 1;
- DeleteFrame();
- 
-  if (CurrentFrame > FrameCount)
-     CurrentFrame--;
- 
- RecallFrame(CurrentFrame);
-}
- 
-} 
-  
-  x += 85;
-   if (overRect(x-3, y-18, 29, 18) )
-  {  //   "<<", move to previous frame.
- 
- if ( CurrentFrame > 1)
- {
-    
-StoreFrame();
-CurrentFrame--;
-RecallFrame(CurrentFrame);
-CurrentDuration = PeggyDurations[CurrentFrame - 1];
-  
- }   
-     
-} 
- 
-  x += 45; 
-  x += 30;    
-  x += 25;   
-  x += 45;
-     if (overRect(x-3, y-18, 29, 18) )
-  { //    text(">>", x, y);
-   if (CurrentFrame < FrameCount){
-
-       
-StoreFrame();
-
-CurrentFrame++;
-RecallFrame(CurrentFrame);
-CurrentDuration = PeggyDurations[CurrentFrame - 1];
-  
-   
-   }
-} 
-    
-  x += 60;
-  
-  
-   if (overRect(x+5, y-18, 50, 18) )    ///  "+Frame" :: Add a frame.
-  { 
-
-  FrameCount += 1; 
-  
-StoreFrame();
-InsertFrame();   
-CurrentFrame++;
-RecallFrame(CurrentFrame);   //OK thus far...
-
-CurrentDuration = PeggyDurations[CurrentFrame - 1];
-
-} 
-  
-
+/*
   y = cellSize*rows + 105;
-
-
   x = 110; 
      if (overRect(x+5, y-18, 75, 18) )
-  { 
+  {
 //    text("All frames:", x, y);
 
    if (SteadyRate)
    SteadyRate = false;
     else
     SteadyRate = true;
-
-
-
 } 
-  
-  
   x += 100; 
 
   x += 35;   
@@ -304,8 +253,7 @@ if (SteadyRate){
   
       j++;
       }
-}
-    
+}   
 } 
   
  
@@ -333,29 +281,12 @@ else
       j++;
       }
 }
-} 
-  
-   x = 375;
+}
 
-   if (overRect(x, y-18, 45, 18) )
-  { 
- //   text("Load", x, y);
-} 
-  
-  
-  x += 65;  if (overRect(x, y-18, 45, 18) )
-  { //text("Save", x, y);
-
-  } 
-
-  
-  }
-
+*/
 
   /*
-  // Handle other interface bits here as well!
-   
-    
+  // Handle other interface bits here as well! 
    
    if ( buttonSave.over ) {  //Save output file
    String comma = ",";
@@ -430,7 +361,18 @@ PFont font_MB48;
 PFont font_MB24;
 PFont font_ML16;
 
- 
+SimpleButton clearButton;
+SimpleButton fillButton;
+SimpleButton invertButton;
+SimpleButton copyButton;
+SimpleButton pasteButton;
+SimpleButton deleteButton;
+SimpleButton addButton;
+SimpleButton previousButton;
+SimpleButton nextButton;
+SimpleButton loadButton;
+SimpleButton saveButton;
+
 void setup() { 
   
 //  UpFrame = false;
@@ -471,7 +413,41 @@ void setup() {
  
   DataX = 15;
   DataY = cellSize*rows +25;
-
+  
+  x = 110;
+  y = cellSize*rows + 25;
+  clearButton = new SimpleButton("Clear", x, y, font_MB24, 24, TextColor, TextHighLight);
+  x += 75;
+  fillButton = new SimpleButton("Fill", x, y, font_MB24, 24, TextColor, TextHighLight);
+  x += 65;
+  invertButton = new SimpleButton("Invert", x, y, font_MB24, 24, TextColor, TextHighLight);
+  x += 85;
+  copyButton = new SimpleButton("Copy", x, y, font_MB24, 24, TextColor, TextHighLight);
+  x += 75;
+  pasteButton = new SimpleButton("Paste", x, y, font_MB24, 24, TextColor, TextHighLight);
+  
+  x = 105;
+  y = cellSize*rows + 65;
+  deleteButton = new SimpleButton("-Frame", x, y, font_MB24, 24, TextColor, TextHighLight);
+  x += 85;
+  previousButton = new SimpleButton("<<", x, y, font_MB24, 24, TextColor, TextHighLight);
+  x +=  45 + 30 + 25 + 45;
+  nextButton = new SimpleButton(">>", x, y, font_MB24, 24, TextColor, TextHighLight);
+  x += 60;
+  addButton = new SimpleButton("+Frame", x, y, font_MB24, 24, TextColor, TextHighLight);
+  
+  x = 110;
+  y = cellSize*rows + 105;
+  // toggle button
+  x += 100;
+  // duration decrease button
+  x += 15 + 15;
+  // duration increase button
+  
+  x = 375;
+  loadButton = new SimpleButton("Load", x, y, font_MB24, 24, TextColor, TextHighLight);
+  x += 65;
+  saveButton = new SimpleButton("Save", x, y, font_MB24, 24, TextColor, TextHighLight);
 
 }  // End Setup
 
@@ -544,143 +520,69 @@ void draw() {
   text("PeggyDraw 2", x, y); 
 
    textFont(font_MB24, 24);
-  fill(TextColor);  
+  fill(TextColor); 
+
+  DrawButtons();  
+
+  textFont(font_ML16, 16);
+  fill(TextHighLight);
+  String message = new String("");
   
+  // Display mouseover text!
+  if (clearButton.isSelected()) {
+    message = "Erase this frame";
+  }
+  else if (fillButton.isSelected()) {
+    message = "Fill this frame with dots";
+  }
+  else if (invertButton.isSelected()) {
+    message = "Create the negative of this frame";
+  }
+  else if (copyButton.isSelected()) {
+    message = "Don't tell the RIAA or MPAA";
+  }
+  else if (pasteButton.isSelected()) {
+    message = "Less messy than a glue stick";
+  }
+  else if (deleteButton.isSelected()) {
+    message = "DELETE this frame";
+  }
+  else if (addButton.isSelected()) {
+    message = "Add a frame after this frame";
+  }
+  else if (previousButton.isSelected()) {
+    message = "Go to Previous Frame";
+  }
+  else if (nextButton.isSelected()) {
+    message = "Go to Next Frame";
+  }
+  else if (loadButton.isSelected()) {
+    message = "Re-load a saved file";
+  }
+  else if (saveButton.isSelected()) {
+    message = "Export program for Arduino";
+  }
   
+  if (message != "") {
+    text(message, DataX, DataY-10, 75, 100);
+  }
+
+  // TODO: remove me
+  textFont(font_MB24, 24); 
+  fill(TextColor); 
+
   x = 110;
   y =  cellSize*rows + 25;
-
-
-
-
-  text("Clear", x, y);
-  if (overRect(x, y-18, 40, 18) )
-  {  
-    fill(TextHighLight); 
-    text("Clear", x, y);
-
-    textFont(font_ML16, 16); 
-
-    text("Erase this frame", DataX, DataY-10, 75, 100); 
-    textFont(font_MB24, 24); 
-    fill(TextColor); 
-  } 
-
  
   x += 75;
-  text("Fill", x, y);
- if (overRect(x, y-18, 30, 18) )
-  {  
-    fill(TextHighLight); 
-    text("Fill", x, y);
-
-    textFont(font_ML16, 16); 
-
-    text("Fill this frame with dots", DataX, DataY-10, 75, 100); 
-    textFont(font_MB24, 24); 
-    fill(TextColor); 
-  } 
- 
-
-  x += 65;
-  text("Invert", x, y);
- if (overRect(x, y-18, 50, 18) )
-  { 
-//    fill(circleColor);
-//    rect(x, y-18, 50, 18);
-
-    fill(TextHighLight); 
-    text("Invert", x, y);
-
-    textFont(font_ML16, 16); 
-
-    text("Create the negative of this frame", DataX, DataY-10, 75, 100); 
-    textFont(font_MB24, 24); 
-    fill(TextColor); 
-  } 
-  
-  
+  x += 65;  
   x += 85;
-  text("Copy", x, y);
- if (overRect(x, y-18, 40, 18) )
-  { 
- //   fill(circleColor);
- //   rect(x, y-18, 40, 18);
-
-    fill(TextHighLight); 
-    text("Copy", x, y);
-
-    textFont(font_ML16, 16); 
-
-    text("Don't tell the RIAA or MPAA", DataX, DataY-10, 75, 100); 
-    textFont(font_MB24, 24); 
-    fill(TextColor); 
-  } 
-  
-
-
-
   x += 75;
-  text("Paste", x, y);
- if (overRect(x, y-18, 45, 18) )
-  { 
-  //  fill(circleColor);
-//    rect(x, y-18, 45, 18);
-
-    fill(TextHighLight); 
-    text("Paste", x, y);
-
-    textFont(font_ML16, 16); 
-
-    text("Less messy than a glue stick.", DataX, DataY-10, 75, 100); 
-    textFont(font_MB24, 24); 
-    fill(TextColor); 
-  } 
 
 
   x = 105;
   y = cellSize*rows + 65;
-
-  text("-Frame", x, y);
-   if (overRect(x+5, y-18, 50, 18) )
-  { 
-  //  fill(circleColor);
-  //  rect(x+5, y-18, 50, 18);
-
-    fill(TextHighLight); 
-    text("-Frame", x, y);
-
-    textFont(font_ML16, 16); 
-
-    text("DELETE this frame", DataX, DataY-10, 75, 100); 
-    textFont(font_MB24, 24); 
-    fill(TextColor); 
-  } 
-  
-  
-   
   x += 85;
-  text("<<", x, y);
-   if (overRect(x-3, y-18, 29, 18) )
-  { 
-    //fill(circleColor);
-    //rect(x-3, y-18, 29, 18);
-
-    fill(TextHighLight); 
-    text("<<", x, y);
-
-    textFont(font_ML16, 16); 
-
-    text("Go to Previous Frame.", DataX, DataY-10, 75, 100); 
-    textFont(font_MB24, 24); 
-    fill(TextColor); 
-  } 
-  
-  
-  
-  
-  
-
   x += 45; 
 
   text(CurrentFrame, x, y); 
@@ -690,50 +592,10 @@ void draw() {
   text(FrameCount, x, y);
 
   x += 45;
-  text(">>", x, y);
-     if (overRect(x-3, y-18, 29, 18) )
-  { 
-//    fill(circleColor);
-//    rect(x-3, y-18, 29, 18);
-
-    fill(TextHighLight); 
-    text(">>", x, y);
-
-    textFont(font_ML16, 16); 
-
-    text("Go to Next Frame.", DataX, DataY-10, 75, 100); 
-    textFont(font_MB24, 24); 
-    fill(TextColor); 
-  } 
-  
-   
-  
   x += 60;
-  text("+Frame", x, y);
-   if (overRect(x+5, y-18, 50, 18) )
-  { 
-  //  fill(circleColor);
-  //  rect(x+5, y-18, 50, 18);
-
-    fill(TextHighLight); 
-    text("+Frame", x, y);
-
-    textFont(font_ML16, 16); 
-
-    text("Add a frame after this frame", DataX, DataY-10, 75, 100); 
-    textFont(font_MB24, 24); 
-    fill(TextColor); 
-  } 
   
-  
-  
-  
-  
-
 
   y = cellSize*rows + 105;
-
-
   x = 110; 
   
   if (SteadyRate)
@@ -824,47 +686,8 @@ if (overRect(x-3, y-18, 20, 18) )
     fill(TextColor); 
   } 
   
- 
-
-
   x = 375;
-
-  text("Load", x, y);
-   if (overRect(x, y-18, 45, 18) )
-  { 
-    fill(circleColor);
-    rect(x, y-18, 45, 18);
-
-    fill(TextHighLight); 
-    text("Load", x, y);
-
-    textFont(font_ML16, 16); 
-
-    text("Re-load a saved file.", DataX, DataY-10, 75, 100); 
-    textFont(font_MB24, 24); 
-    fill(TextColor); 
-  } 
-  
-  
-  x += 65; 
-
-  text("Save", x, y); 
- if (overRect(x, y-18, 45, 18) )
-  { 
-    fill(circleColor);
-    rect(x, y-18, 45, 18);
-
-    fill(TextHighLight); 
-    text("Save", x, y);
-
-    textFont(font_ML16, 16); 
-
-    text("Export program for Arduino.", DataX, DataY-10, 75, 100); 
-    textFont(font_MB24, 24); 
-    fill(TextColor); 
-  } 
-
-
+  x += 65;
 
 } // end main loop 
 
