@@ -26,6 +26,10 @@ int cellSize = 20;
 int cols = 25;
 int rows = 25;
 
+//int cols = 13;
+//int rows = 9;
+
+
 // Display colors
 // TODO: Make these constants?
 int TextColor = 10;
@@ -67,6 +71,17 @@ boolean overRect(int x, int y, int width, int height)
     return false;
 }
 
+void updateFrameDuration(int duration) {
+  if (SteadyRate) {
+    for (int i = 0; i < frames.getFrameCount(); i++) {
+      frames.getFrame(i).setDuration(duration);
+    }
+  }
+  else {
+    frames.getCurrentFrame().setDuration(duration);
+  }
+}
+
 
 void setup() {
 
@@ -93,6 +108,8 @@ void setup() {
 
   DataX = 15;
   DataY = cellSize*rows +25;
+
+  // Initialize the text buttons that act as our GUI
 
   int x,y;
 
@@ -146,6 +163,7 @@ void draw() {
 
   AnimationFrame currentFrame = frames.getCurrentFrame();
 
+  // Draw the current frame
   for ( i = 0; i < currentFrame.width; i++) {
     for ( j = 0; j < currentFrame.height; j++) {
       if (currentFrame.getPixel(i, j) > 0)
@@ -157,8 +175,6 @@ void draw() {
     }
   }
 
-  fill(8);  
-  textFont(font_MB24, 24); 
 
   if ((mouseX > 0) && (mouseX < cols*cellSize) && (mouseY > 0) && (mouseY < rows*cellSize))
   {
@@ -166,19 +182,10 @@ void draw() {
     mxin = floor( mouseX / cellSize);
     myin = floor( mouseY / cellSize); 
 
-    if(mousePressed && pendown)
-    {
-      if (pencolor == brightFillColor)
-        currentFrame.setPixel(mxin, myin, brightFillColor);
-      else
-        currentFrame.setPixel(mxin, myin, 0);
-    }
+    fill(8);  
+    textFont(font_MB24, 24); 
 
-    // Position Display:
-
-    fill(8);
-    textFont(font_MB24, 24);
-
+    // Display the mouse position
     if (mxin > 9) 
       text(mxin, DataX - 10, DataY); 
     else
@@ -191,21 +198,27 @@ void draw() {
     else
       text(myin, DataX + 20, DataY);
 
-
-
+    // If the user has the mouse button pressed, do a drawing action
+    if(mousePressed && pendown)
+    {
+      if (pencolor == brightFillColor)
+        currentFrame.setPixel(mxin, myin, brightFillColor);
+      else
+        currentFrame.setPixel(mxin, myin, 0);
+    }
   }
 
+  // Display the PeggyDraw logo
   fill(5);  
   textFont(font_ML16, 16); 
 
   x = 10;
   y = cellSize*rows + 110;  
   text("PeggyDraw 2", x, y); 
-
-  textFont(font_MB24, 24);
-  fill(TextColor); 
-
+  
+  // Draw the text buttons
   DrawButtons();  
+
 
   textFont(font_ML16, 16);
   fill(TextHighLight);
@@ -263,7 +276,6 @@ void draw() {
   textFont(font_MB24, 24); 
   fill(TextColor);
 
-
   x = 105;
   y = cellSize*rows + 65;
   x += 85;
@@ -303,6 +315,7 @@ void draw() {
   text("/", x, y);
 
 } // end main loop 
+
 
 void mousePressed() {
 
@@ -376,6 +389,7 @@ void mousePressed() {
       else {
         SteadyRate = true;
         durationTypeButton.updateLabel("All frames: ");
+        updateFrameDuration(currentFrame.getDuration());
       }
     }
     else if( durationPlusButton.isSelected() ) {
@@ -388,12 +402,8 @@ void mousePressed() {
         duration += 1000;
       else
         duration = 60000;
-
-      currentFrame.setDuration(duration);
-
-      if (SteadyRate) {
-        // TODO
-      }
+        
+      updateFrameDuration(duration);
     } 
     else if( durationMinusButton.isSelected() ) {
       int duration = currentFrame.getDuration();
@@ -407,12 +417,8 @@ void mousePressed() {
       else
         duration = 10;
 
-      currentFrame.setDuration(duration);
-
-      if (SteadyRate) {
-        // TODO
-      }
-    }
+      updateFrameDuration(duration);
+    }     
     else if( loadButton.isSelected() ) {
       // TODO: Load in the data!
     }

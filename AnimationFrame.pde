@@ -23,6 +23,10 @@ class AnimationFrames
     return (AnimationFrame) frames.get(current);
   }
   
+  AnimationFrame getFrame(int frameNo) {
+    return (AnimationFrame) frames.get(frameNo);
+  }
+    
   void replaceCurrentFrame(AnimationFrame ref) {
     frames.set(current, new AnimationFrame(ref));
   }
