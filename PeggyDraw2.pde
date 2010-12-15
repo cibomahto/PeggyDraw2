@@ -2,7 +2,7 @@
  * PeggyDraw
  * v 2.0
  * by Windell H Oskay, Evil Mad Scientist Laboratories
- * portions by Matt Mets, cibomahto.com
+ * portions by Matt Mets, http://cibomahto.com
  *  
  */
 
@@ -19,16 +19,15 @@ int dimFillColor = 3;          // This is the color stored in the animation fram
 boolean pendown = false;
 int pencolor; 
 
-// Size of each cell in the grid 
-int cellSize = 20; 
-
 // Number of columns and rows in our system
 int cols = 25;
 int rows = 25;
 
-//int cols = 13;
-//int rows = 9;
+int guiWidth = 500;
+int guiHeight = 125;
 
+// Size of each cell in the grid 
+int cellSize = guiWidth/cols; 
 
 // Display colors
 // TODO: Make these constants?
@@ -85,10 +84,10 @@ void updateFrameDuration(int duration) {
 
 void setup() {
 
-  frames = new AnimationFrames(cols,rows,100);
+  frames = new AnimationFrames(cols,rows);
 
   // TODO: make sure this size makes sense.
-  size(cellSize*cols, cellSize*rows + 125 , JAVA2D);
+  size(guiWidth, guiHeight + cellSize*rows, JAVA2D);
   smooth();
 
   font_MB24  = loadFont("Miso-Bold-24.vlw");
@@ -379,7 +378,14 @@ void mousePressed() {
       frames.setCurrentPosition(frames.getCurrentPosition() + 1);
     }
     else if( addButton.isSelected() ) {
+      // Store the current duration so that we can copy it to the new frame
+      int duration = frames.getCurrentFrame().getDuration();
+      
+      // Create the new frame
       frames.addFrame(frames.getCurrentPosition()+1);
+      
+      // Then copy the duration back over
+      frames.getCurrentFrame().setDuration(duration);
     }
     else if( durationTypeButton.isSelected() ) {
       if (SteadyRate) {

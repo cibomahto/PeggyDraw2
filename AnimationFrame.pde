@@ -7,13 +7,11 @@ class AnimationFrames
   
   protected int width;
   protected int height;
-  int defaultDuration;
   
-  AnimationFrames(int width, int height, int defaultDuration)
+  AnimationFrames(int width, int height)
   {
     this.width = width;
     this.height = height;
-    this.defaultDuration = defaultDuration;
     
     frames = new ArrayList();
     addFrame(0);
@@ -48,7 +46,7 @@ class AnimationFrames
   void addFrame(int position) {
     // TODO: do we need to check that the position is in range?
     
-    frames.add(position, new AnimationFrame(width, height, defaultDuration));
+    frames.add(position, new AnimationFrame(width, height));
     
     current = position;
   }
@@ -75,6 +73,8 @@ class AnimationFrame
   int height;
   int duration;
   int frameData[];
+  
+  int defaultDuration = 100;
 
   AnimationFrame(AnimationFrame ref) {
     width = ref.width;
@@ -88,10 +88,10 @@ class AnimationFrame
     }
   }
   
-  AnimationFrame(int width, int height, int duration) {
+  AnimationFrame(int width, int height) {
     this.width = width;
     this.height = height;
-    this.duration = duration;
+    this.duration = defaultDuration;
     
     frameData = new int[height*width];
     preset(0);
