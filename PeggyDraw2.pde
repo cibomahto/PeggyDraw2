@@ -9,6 +9,9 @@
 AnimationFrames frames;        // Storage for our frame stack
 AnimationFrame copiedFrame;    // Reference to the copied frame
 
+import processing.serial.*;
+livePreview lolShield;
+
 boolean SteadyRate = true;     // True if all frames have the same duration
 
 int DataX,DataY;               // Offset to draw the data display at
@@ -20,11 +23,11 @@ boolean pendown = false;
 int pencolor; 
 
 // Number of columns and rows in our system
-int cols = 25;
-int rows = 25;
+int cols = 14;
+int rows = 9;
 
 int guiWidth = 500;
-int guiHeight = 125;
+int guiHeight = 150;
 
 // Size of each cell in the grid 
 int cellSize = guiWidth/cols; 
@@ -34,6 +37,9 @@ int cellSize = guiWidth/cols;
 int TextColor = 10;
 int TextHighLight = 15;
 int bgColor = 1;
+
+boolean playing;
+int startTime;
 
 /*
 String[] header;
@@ -46,6 +52,7 @@ String[] OneRow;
 PFont font_MB24;
 PFont font_ML16;
 
+// Active buttons
 SimpleButton clearButton;
 SimpleButton fillButton;
 SimpleButton invertButton;
@@ -61,6 +68,10 @@ SimpleButton durationTypeButton;
 SimpleButton durationPlusButton;
 SimpleButton durationMinusButton;
 
+SimpleButton playButton;
+
+// Inactive buttons (used as text displays)
+SimpleButton durationSlashText;
 
 boolean overRect(int x, int y, int width, int height) 
 {
@@ -86,8 +97,8 @@ void setup() {
 
   frames = new AnimationFrames(cols,rows);
 
-  // TODO: make sure this size makes sense.
   size(guiWidth, guiHeight + cellSize*rows, JAVA2D);
+
   smooth();
 
   font_MB24  = loadFont("Miso-Bold-24.vlw");
@@ -143,13 +154,33 @@ void setup() {
   // duration decrease button
   durationPlusButton = new SimpleButton("+", x, y, font_MB24, 24, TextColor, TextHighLight);
 
-  x += 15 + 15;
+  x += 15;
+  durationSlashText = new SimpleButton("/", x, y, font_MB24, 24, TextColor, TextColor);
+  
+  x += 15;
   durationMinusButton = new SimpleButton("-", x, y, font_MB24, 24, TextColor, TextHighLight);
 
   x = 375;
   loadButton = new SimpleButton("Load", x, y, font_MB24, 24, TextColor, TextHighLight);
   x += 65;
   saveButton = new SimpleButton("Save", x, y, font_MB24, 24, TextColor, TextHighLight);
+
+  x = 110;
+  y = cellSize*rows + 145;
+  playButton = new SimpleButton("Play", x, y, font_MB24, 24, TextColor, TextHighLight);
+
+  // I know that the first port in the serial list on my mac
+  // is always my  FTDI adaptor, so I open Serial.list()[0].
+  // On Windows machines, this generally opens COM1.
+  // Open whatever port is the one you're using.
+
+  System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0");
+  String portName = Serial.list()[0];
+  print(portName);
+  lolShield = new livePreview(this, portName);
+  
+  playing = false;
+
 
 }  // End Setup
 
@@ -173,6 +204,8 @@ void draw() {
       ellipse(i*cellSize + 1,  j*cellSize + 1, cellSize - 1 , cellSize- 1); 
     }
   }
+  
+  lolShield.displayAnimationFrame(currentFrame);
 
 
   if ((mouseX > 0) && (mouseX < cols*cellSize) && (mouseY > 0) && (mouseY < rows*cellSize))
@@ -308,10 +341,13 @@ void draw() {
     x += 35;   
     text("s", x, y); 
   }
-
-  x += 35;
-  x += 15;
-  text("/", x, y);
+  
+  if (playing) {
+    if (millis() > startTime + currentFrame.getDuration()) {
+      startTime = millis();
+      frames.setCurrentPosition((frames.getCurrentPosition() + 1)%frames.getFrameCount());
+    }
+  }
 
 } // end main loop 
 
@@ -430,6 +466,17 @@ void mousePressed() {
     }
     else if( saveButton.isSelected() ) {
       // TODO: Save out the data!
+    }
+    else if (playButton.isSelected()) {
+      if (playing) {
+        playButton.updateLabel("Play");
+        playing = false;
+      }
+      else {
+        playButton.updateLabel("Pause");
+        playing = true;
+        startTime = millis();
+      }
     }
   }
 }
