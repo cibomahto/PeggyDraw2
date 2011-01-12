@@ -24,7 +24,7 @@ int cols = 25;
 int rows = 25;
 
 int guiWidth = 500;
-int guiHeight = 125;
+int guiHeight = 150;
 
 // Size of each cell in the grid 
 int cellSize = guiWidth/cols; 
@@ -34,6 +34,9 @@ int cellSize = guiWidth/cols;
 int TextColor = 10;
 int TextHighLight = 15;
 int bgColor = 1;
+
+boolean playing;
+int startTime;
 
 /*
 String[] header;
@@ -46,6 +49,7 @@ String[] OneRow;
 PFont font_MB24;
 PFont font_ML16;
 
+// Active buttons
 SimpleButton clearButton;
 SimpleButton fillButton;
 SimpleButton invertButton;
@@ -61,6 +65,10 @@ SimpleButton durationTypeButton;
 SimpleButton durationPlusButton;
 SimpleButton durationMinusButton;
 
+SimpleButton playButton;
+
+// Inactive buttons (used as text displays)
+SimpleButton durationSlashText;
 
 boolean overRect(int x, int y, int width, int height) 
 {
@@ -143,13 +151,22 @@ void setup() {
   // duration decrease button
   durationPlusButton = new SimpleButton("+", x, y, font_MB24, 24, TextColor, TextHighLight);
 
-  x += 15 + 15;
+  x += 15;
+  durationSlashText = new SimpleButton("/", x, y, font_MB24, 24, TextColor, TextColor);
+
+  x += 15;
   durationMinusButton = new SimpleButton("-", x, y, font_MB24, 24, TextColor, TextHighLight);
 
   x = 375;
   loadButton = new SimpleButton("Load", x, y, font_MB24, 24, TextColor, TextHighLight);
   x += 65;
   saveButton = new SimpleButton("Save", x, y, font_MB24, 24, TextColor, TextHighLight);
+
+  x = 110;
+  y = cellSize*rows + 145;
+  playButton = new SimpleButton("Play", x, y, font_MB24, 24, TextColor, TextHighLight);
+  
+  playing = false;
 
 }  // End Setup
 
@@ -309,10 +326,13 @@ void draw() {
     text("s", x, y); 
   }
 
-  x += 35;
-  x += 15;
-  text("/", x, y);
-
+  if( playing ) {
+    if (millis() > startTime + currentFrame.getDuration()) {
+      startTime = millis();
+      frames.setCurrentPosition((frames.getCurrentPosition() + 1)%frames.getFrameCount());
+    }
+  }
+  
 } // end main loop 
 
 
@@ -430,6 +450,17 @@ void mousePressed() {
     }
     else if( saveButton.isSelected() ) {
       // TODO: Save out the data!
+    }
+    else if( playButton.isSelected() ) {
+      if (playing) {
+        playButton.updateLabel("Play");
+        playing = false;
+      }
+      else {
+        playButton.updateLabel("Pause");
+        playing = true;
+        startTime = millis();
+      }
     }
   }
 }
