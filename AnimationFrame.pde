@@ -14,7 +14,6 @@ class AnimationFrames
     this.height = height;
     
     frames = new ArrayList();
-    addFrame(0);
   }
   
   AnimationFrame getCurrentFrame() {
@@ -43,10 +42,10 @@ class AnimationFrames
     }
   }
 
-  void addFrame(int position) {
+  void addFrame(AnimationFrame frame, int position) {
     // TODO: do we need to check that the position is in range?
     
-    frames.add(position, new AnimationFrame(width, height));
+    frames.add(position, frame);
     
     current = position;
   }
@@ -56,7 +55,7 @@ class AnimationFrames
     
     // If we have deleted all of the frames, make a new blank one to be friendly.
     if (frames.size() == 0) {
-      addFrame(0);
+//      addFrame(0);
     }
     
     // If the current frame is now invalid, select one that is.
@@ -64,6 +63,8 @@ class AnimationFrames
       current = frames.size() - 1;
     }
   }
+  
+  
 }
   
 // A single image frame
@@ -81,11 +82,23 @@ class AnimationFrame
     height = ref.height;
     duration = ref.duration;
     
-    // TODO: any better way to do this?
+    // TODO: any better way to do this? (yes, clone)
     frameData = new int[height*width];
     for (int i = 0; i < height*width; i++) {
       frameData[i] = ref.frameData[i];
     }
+  }
+  
+  AnimationFrame(int width, int height, int[] frameData, int duration) {
+    if (width * height != frameData.length) {
+      // error
+    }
+    
+    this.width = width;
+    this.height = height;
+    this.duration = duration;
+    
+    this.frameData = frameData.clone();
   }
   
   AnimationFrame(int width, int height) {
@@ -126,5 +139,9 @@ class AnimationFrame
   
   void setDuration(int duration) {
     this.duration = duration;
+  }
+  
+  int[] getFrameData() {
+    return (int[])frameData.clone();
   }
 }

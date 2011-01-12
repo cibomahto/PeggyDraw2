@@ -9,6 +9,8 @@
 AnimationFrames frames;        // Storage for our frame stack
 AnimationFrame copiedFrame;    // Reference to the copied frame
 
+AnimationLoader loader;        // Functions to load/save animations
+
 boolean SteadyRate = true;     // True if all frames have the same duration
 
 int DataX,DataY;               // Offset to draw the data display at
@@ -20,14 +22,14 @@ boolean pendown = false;
 int pencolor; 
 
 // Number of columns and rows in our system
-int cols = 25;
-int rows = 25;
+final int cols = 25;
+final int rows = 25;
 
-int guiWidth = 500;
-int guiHeight = 150;
+final int guiWidth = 500;
+final int guiHeight = 150;
 
 // Size of each cell in the grid 
-int cellSize = guiWidth/cols; 
+final int cellSize = guiWidth/cols; 
 
 // Display colors
 // TODO: Make these constants?
@@ -37,14 +39,6 @@ int bgColor = 1;
 
 boolean playing;
 int startTime;
-
-/*
-String[] header;
-String[] RowData;
-String[] footer;
-String[] FileOutput; 
-String[] OneRow; 
-*/
 
 PFont font_MB24;
 PFont font_ML16;
@@ -93,6 +87,8 @@ void updateFrameDuration(int duration) {
 void setup() {
 
   frames = new AnimationFrames(cols,rows);
+  
+  loader = new AnimationLoader();
 
   // TODO: make sure this size makes sense.
   size(guiWidth, guiHeight + cellSize*rows, JAVA2D);
@@ -101,10 +97,6 @@ void setup() {
   font_MB24  = loadFont("Miso-Bold-24.vlw");
   font_ML16  = loadFont("Miso-Light-16.vlw"); 
 
-/*
-  header = loadStrings("PeggyHeader.txt");
-  footer = loadStrings("PeggyFooter.txt");
-*/
 
   colorMode(RGB, 15);    // Max value of R, G, B = 15.
   ellipseMode(CORNER);
@@ -167,7 +159,9 @@ void setup() {
   playButton = new SimpleButton("Play", x, y, font_MB24, 24, TextColor, TextHighLight);
   
   playing = false;
-
+  
+  // Finally, add an empty frame to the animation
+  frames.addFrame(new AnimationFrame(cols, rows), 0);
 }  // End Setup
 
 
@@ -390,6 +384,11 @@ void mousePressed() {
     }
     else if( deleteButton.isSelected() ) {
       frames.removeFrame(frames.getCurrentPosition());
+     
+      // If we've deleted all the frames, make a new one 
+      if (frames.getFrameCount() == 0) {
+        frames.addFrame(new AnimationFrame(cols, rows), 0);
+      }
     }
     else if( previousButton.isSelected() ) {
       frames.setCurrentPosition(frames.getCurrentPosition() - 1);
@@ -402,10 +401,11 @@ void mousePressed() {
       int duration = frames.getCurrentFrame().getDuration();
       
       // Create the new frame
-      frames.addFrame(frames.getCurrentPosition()+1);
+      AnimationFrame newFrame = new AnimationFrame(cols, rows);
+      newFrame.setDuration(duration);
       
-      // Then copy the duration back over
-      frames.getCurrentFrame().setDuration(duration);
+      // Then add it
+      frames.addFrame(newFrame, frames.getCurrentPosition());
     }
     else if( durationTypeButton.isSelected() ) {
       if (SteadyRate) {
@@ -446,9 +446,11 @@ void mousePressed() {
       updateFrameDuration(duration);
     }     
     else if( loadButton.isSelected() ) {
-      // TODO: Load in the data!
+      AnimationFrames newAnimation = loader.LoadAnimation("demo_load");
+      frames = newAnimation;
     }
     else if( saveButton.isSelected() ) {
+      loader.SaveAnimation("demo_save", frames);
       // TODO: Save out the data!
     }
     else if( playButton.isSelected() ) {
@@ -469,41 +471,4 @@ void mouseReleased() {
   pendown = false;
 }
 
-
-/*   
- if ( buttonSave.over ) {  //Save output file
- String comma = ",";
- 
- for (int i = 0; i < rows; i++) {
- // Begin loop for rows
- rowdata = 0;
- for (int j = 0; j < cols; j++) {
- 
- if (GrayArray[i*cols + j] > 0)
- {
- rowdata += (1 << j);  
- }
- }
- 
- if (i == (rows - 1))
- header = append(header, str(rowdata));
- else
- header = append(header, str(rowdata) + ',');
- }
- FileOutput = concat(header, footer);
- 
- File outputDir = new File(sketchPath, "PeggyProgram"); 
- if (!outputDir.exists()) 
- outputDir.mkdirs(); 
- 
- saveStrings("PeggyProgram/PeggyProgram.pde", FileOutput);   
- //Note: "/" apparently works as a path separator on all operating systems.
- 
- for (int j = 0; j < rows; j++) {
- for (int i = 0; i < cols; i++) { 
- 
- }
- }
- }
- */
 
