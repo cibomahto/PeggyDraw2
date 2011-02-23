@@ -100,8 +100,7 @@ void setup() {
 
   colorMode(RGB, 15);    // Max value of R, G, B = 15.
   ellipseMode(CORNER);
-
-
+  
   strokeWeight(1);   
   stroke(2);         // Set color: Gray outline for LED locations.
 
@@ -450,8 +449,17 @@ void mousePressed() {
       frames = newAnimation;
     }
     else if( saveButton.isSelected() ) {
-      loader.SaveAnimation("demo_save", frames);
-      // TODO: Save out the data!
+      // Write to a new file in the PeggyProgram directory, using the current date and time for a name
+      
+      // First off, if the PeggyProgram directory doesn't exist, create it!
+      File outputDir = new File(sketchPath, "PeggyProgram"); 
+      if (!outputDir.exists()) 
+        outputDir.mkdirs();
+      
+      // Make a filename
+      String fileName = "Animation " + year() + "-" + month() + "-" + day() + "_" + hour() + ":" + minute();
+      // Now, call the loader object to actually save the animation.
+      loader.SaveAnimation("PeggyProgram/" + fileName, frames);
     }
     else if( playButton.isSelected() ) {
       if (playing) {

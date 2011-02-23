@@ -1,30 +1,25 @@
-};
-
-
 
 void setup()                    // run once, when the sketch starts
 {
-  frame1.HardwareInit();   // Call this once to init the hardware. 
+  frame.HardwareInit();   // Call this once to init the hardware. 
   // (Only needed once, even if you've got lots of frames.)
+}
 
-  unsigned short y = 0;     
-
-  while (y < 25) {
-
-
-    frame1.WriteRow( y, data1[y]); 
-
-    y++;
-
-  }
-
-
-}  // End void setup()  
-
+long currentFrame = 0;
 
 void loop()                     // run over and over again
 { 
+  unsigned short y = 0;     
+  while (y < 25) {
+    frame.WriteRow( y, frames[currentFrame][y]); 
+    y++;
+  }
 
-  frame1.RefreshAll(10); //Draw frame buffer 10 times 
+  // Note: Not sure how long this translates to!
+  frame.RefreshAll(frameDurations[currentFrame]); //Draw frame buffer n times
 
+  currentFrame += 1;
+  if (currentFrame >= frameCount) {
+    currentFrame = 0;
+  }
 }

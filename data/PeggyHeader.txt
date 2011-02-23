@@ -23,6 +23,5 @@
 #include <math.h>
 #include <stdlib.h> 
 
-Peggy2 frame1;     // Make a frame buffer object, called frame1 
+Peggy2 frame;     // Make a frame buffer object, called frame 
 
-unsigned long data1[25] = {

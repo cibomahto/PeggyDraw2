@@ -39,20 +39,19 @@
 
 class AnimationLoader
 {
-  /*
   String[] header;
-  String[] RowData;
   String[] footer;
+  /*
+  String[] RowData;
+
   String[] FileOutput; 
   String[] OneRow; 
   */
 
   AnimationLoader() {
-    
-    /*
+    // Load any constant strings here
     header = loadStrings("PeggyHeader.txt");
     footer = loadStrings("PeggyFooter.txt");
-    */
 
   }
  
@@ -89,25 +88,71 @@ class AnimationLoader
   }
   
   void SaveAnimation(String filename, AnimationFrames animation) {
+    // File object to write to
+    PrintWriter output;
+
     println("Saving animation to: " + filename);
+    // Open the file for writing
+    output = createWriter(filename); 
+    
+    // First, write the header to the file
+    for (String line : header) {
+      output.println(line);
+    }
+    
+    // Maybe write out the number of frames here?
+    output.println("unsigned int frameCount=" + animation.getFrameCount() + ";");
   
-    // For each frame
-    for (int i = 0; i < animation.getFrameCount(); i++) {
-      println("Frame: " + i);
+    // Write out a definition for a big 2d array of frames
+    output.println("unsigned long frames[" + animation.getFrameCount() + "][25]={");
+
+    // Now, for each frame, write it's data as an array of longs.
+    for (int frameNo = 0; frameNo < animation.getFrameCount(); frameNo++) {
+      output.print("{");
       
       // Load the frame data
-      int data[] = animation.getFrame(i).getFrameData();
+      int data[] = animation.getFrame(frameNo).getFrameData();
       
-      // Handle the frame data
-      for (int j = 0; j < data.length; j++) {
-        print(data[j] > 0 ?"o":" ");
+      // Make sure our frame is of the correct size
+      if (rows*cols != data.length) {
+        print("Error! Data size isn't right!");
+        return;
+      }
+
+      // Handle the frame data, row by row.
+      for (int i = 0; i < rows; i++) {
+        long rowData = 0;
         
-        if ((j + 1) % cols == 0) {
-          print("\n");
+        for (int j = 0; j < cols; j++) {       
+          if (data[i*cols + j] > 0)
+          {
+            rowData += (1 << j);
+          }
         }
+        
+        output.print(rowData + ",");
       }
       
-      print("\n");
+      output.print("},\n");
     }
+
+    // close the array
+    output.println("};");
+
+    // Write out the durations to display each frame
+    output.print("unsigned long frameDurations[] = {");
+    for (int frameNo = 0; frameNo < animation.getFrameCount(); frameNo++) {
+      output.print(animation.getFrame(frameNo).getDuration() + ",");
+    }
+    output.print("};");
+    
+    // Now, write the footer to the file
+    for (String line : footer) {
+      output.println(line);
+    }
+    
+    // Finally, make sure the file data is written and close the file.
+    output.flush();
+    output.close();
   }
 }
