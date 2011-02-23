@@ -2,7 +2,7 @@
 // A collection of image frames, therefore an animation.
 class AnimationFrames
 {
-  private ArrayList frames;     // List of all of the frames
+  private ArrayList<AnimationFrame> frames;     // List of all of the frames
   private int current;          // Current frame
   
   protected int width;
@@ -13,15 +13,15 @@ class AnimationFrames
     this.width = width;
     this.height = height;
     
-    frames = new ArrayList();
+    frames = new ArrayList<AnimationFrame>();
   }
   
   AnimationFrame getCurrentFrame() {
-    return (AnimationFrame) frames.get(current);
+    return frames.get(current);
   }
   
   AnimationFrame getFrame(int frameNo) {
-    return (AnimationFrame) frames.get(frameNo);
+    return frames.get(frameNo);
   }
     
   void replaceCurrentFrame(AnimationFrame ref) {
